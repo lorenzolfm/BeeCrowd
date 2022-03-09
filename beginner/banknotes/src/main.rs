@@ -1,5 +1,5 @@
-use std::io;
 use std::collections::HashMap;
+use std::io;
 
 fn handle_input() -> u32 {
     let mut string = String::new();
@@ -8,52 +8,48 @@ fn handle_input() -> u32 {
     string.trim().parse().unwrap()
 }
 
-fn banknotes(value: u32) -> HashMap<u32, u32> {
-    let result = HashMap::from([
-        (100, 0),
-        (50, 0),
-        (20, 0),
-        (10, 0),
-        (5, 0),
-        (2, 0),
-        (1, 0),
-    ]);
-    for i in 0..value {
-        match i {
-            i % 100 == 0 => {
-                let amount = result.entry(100);
-                *amount += 1;
-            }
-            i % 50 == 0 => {
-                let amount = result.entry(50);
-                *amount += 1;
-            }
-            i % 20 == 0 => {
-                let amount = result.entry(20);
-                *amount += 1;
-            }
-            i % 10 == 0 => {
-                let amount = result.entry(10);
-                *amount += 1;
-            }
-            i % 5 == 0 => {
-                let amount = result.entry(5);
-                *amount += 1;
-            }
-            i % 2 == 0 => {
-                let amount = result.entry(2);
-                *amount += 1;
-            }
-            i % 1 == 0 => {
-                let amount = result.entry(1);
-                *amount += 1;
-            }
+fn add_note(
+    value: &mut u32,
+    note_value: u32,
+    mut banknotes: HashMap<u32, u32>,
+) -> HashMap<u32, u32> {
+    let mut counter = 0;
+    banknotes.insert(note_value, counter);
+
+    while *value / note_value > 0 {
+        counter += 1;
+        *value -= note_value;
+    }
+
+    banknotes.insert(note_value, counter);
+
+    banknotes
+}
+
+fn banknotes(mut value: u32, notes: &Vec<u32>) -> HashMap<u32, u32> {
+    let mut banknotes: HashMap<u32, u32> = HashMap::new();
+
+    while value != 0 {
+        for note in notes {
+            banknotes = add_note(&mut value, *note, banknotes);
         }
     }
 
-    result
+    banknotes
+}
+
+fn display_output(value: u32, notes: Vec<u32>, banknotes: HashMap<u32, u32>) {
+    println!("{}", value);
+
+    for note in &notes {
+        println!("{} nota(s) de R$ {},00", banknotes[&note], note);
+    }
 }
 
 fn main() {
-    println!("Hello, world!");
+    let notes = vec![100, 50, 20, 10, 5, 2, 1];
+
+    let value = handle_input();
+    let banknotes = banknotes(value, &notes);
+    display_output(value, notes, banknotes);
 }
