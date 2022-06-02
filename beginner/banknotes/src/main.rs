@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+std::collections::HashMap;
 use std::io;
 
 fn handle_input() -> u32 {
